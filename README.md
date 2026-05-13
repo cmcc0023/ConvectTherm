@@ -4,13 +4,13 @@
 
 本项目针对 **含相变的非稳态对流-扩散传热问题**，采用有限体积法（FVM）编制数值求解程序。
 
-<img src="images/题目方程与条件.png" alt="题目方程与条件" style="zoom:33%;" />
+<img src="images/题目方程与条件.png" alt="题目方程与条件" style="width: 33%;" />
 
 **物理场景**：矩形域内装水，水中含矩形冰块，通过不同边界条件加热，求解瞬态温度场分布，分析冰块融化过程。
 
 
 
-<img src="images/算例.png" alt="算例" style="zoom:33%;" />
+<img src="images/算例.png" alt="算例" style="width: 33%;" />
 
 ## 公式推导
 
@@ -135,57 +135,57 @@ ConvectTherm/
 
 Case 1冰块中心温度随时间变化：
 
-<img src="output/case1_1d_dirichlet_Tc.png" alt="case1_1d_dirichlet_Tc" style="zoom:33%;" />
+<img src="output/case1_1d_dirichlet_Tc.png" alt="case1_1d_dirichlet_Tc" style="width: 33%;" />
 
 Case 1 最终温度分布：
 
-<img src="output/case1_1d_profile.png" alt="case1_1d_profile" style="zoom: 33%;" />
+<img src="output/case1_1d_profile.png" alt="case1_1d_profile" style="width: 33%;" />
 
 Case 2 冰块中心温度随时间变化：
 
-<img src="output/case2_1d_neumann_Tc.png" alt="case2_1d_neumann_Tc" style="zoom:33%;" />
+<img src="output/case2_1d_neumann_Tc.png" alt="case2_1d_neumann_Tc" style="width: 33%;" />
 
 Case 2 最终温度分布：
 
-<img src="output/case2_1d_profile.png" alt="case2_1d_profile" style="zoom:33%;" />
+<img src="output/case2_1d_profile.png" alt="case2_1d_profile" style="width: 33%;" />
 
 Case 3 冰块中心温度随时间变化：
 
-<img src="output/case3_1d_robin_Tc.png" alt="case3_1d_robin_Tc" style="zoom:33%;" />
+<img src="output/case3_1d_robin_Tc.png" alt="case3_1d_robin_Tc" style="width: 33%;" />
 
 Case 3 最终温度分布：
 
-<img src="output/case3_1d_profile.png" alt="case3_1d_profile" style="zoom:33%;" />
+<img src="output/case3_1d_profile.png" alt="case3_1d_profile" style="width: 33%;" />
 
 ### 二维算例
 
 Case 4 温度场云图：
 
-<img src="output/case4_2d_T.png" alt="case4_2d_T" style="zoom:33%;" />
+<img src="output/case4_2d_T.png" alt="case4_2d_T" style="width: 33%;" />
 
 
 
 Case 4 液相率分布：
 
-<img src="output/case4_2d_fl.png" alt="case4_2d_fl" style="zoom:33%;" />
+<img src="output/case4_2d_fl.png" alt="case4_2d_fl" style="width: 33%;" />
 
 Case 5 温度场云图：
 
-<img src="output/case5_2d_T.png" alt="case5_2d_T" style="zoom:33%;" />
+<img src="output/case5_2d_T.png" alt="case5_2d_T" style="width: 33%;" />
 
 Case 5 液相率分布：
 
-<img src="output/case5_2d_fl.png" alt="case5_2d_fl" style="zoom:33%;" />
+<img src="output/case5_2d_fl.png" alt="case5_2d_fl" style="width: 33%;" />
 
 Case 6 温度场云图：
 
 
 
-<img src="output/case6_2d_T.png" alt="case6_2d_T" style="zoom:33%;" />
+<img src="output/case6_2d_T.png" alt="case6_2d_T" style="width: 33%;" />
 
 Case 6 液相率分布：
 
-<img src="output/case6_2d_fl.png" alt="case6_2d_fl" style="zoom:33%;" />
+<img src="output/case6_2d_fl.png" alt="case6_2d_fl" style="width: 33%;" />
 
 ---
 

@@ -113,7 +113,7 @@ ConvectTherm/
 - 计算域：10 cm × 10 cm 矩形
 - 冰块：位于域中央 3–7 cm，初始 4 cm × 4 cm
 - 初始温度：冰块 268.15 K (−5°C)，外围水 275.15 K (2°C)
-- 物理时间：1 小时
+- 物理时间：6000 s（约 100 分钟）
 - 纯导热（无对流），<img src="https://latex.codecogs.com/png.image?u%20%3D%20v%20%3D%200" alt="formula" />
 
 ### 算例矩阵

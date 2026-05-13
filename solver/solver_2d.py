@@ -43,7 +43,6 @@ class BC2D:
 
 def solve_2d(
     T_init: np.ndarray,
-    ice_mask: np.ndarray,
     Lx: float,
     Ly: float,
     Nx: int,
@@ -67,7 +66,6 @@ def solve_2d(
     Parameters
     ----------
     T_init      : 初始温度场 (K)，形状 (Ny, Nx)
-    ice_mask    : 冰区域布尔数组，形状 (Ny, Nx)
     Lx, Ly      : 计算域尺寸 (m)
     Nx, Ny      : x, y 方向网格数
     dt          : 时间步长 (s)
@@ -116,6 +114,8 @@ def solve_2d(
 
     total_picard = 0
     all_converged = True
+    sor_all_converged = True
+    max_sor_iters_used = 0
 
     for n in range(Nt):
         T_old = T.copy()
@@ -181,7 +181,7 @@ def solve_2d(
                     if j < Ny - 1:
                         rhs += a_N * T_new[j + 1, :]
 
-                    a_P = a_P0 + a_W + a_E + a_S + a_N - S_p_line * dx * dy
+                    a_P = a_P0 + a_W + a_E + a_S + a_N + (F_east[j, :] - F_west[j, :]) + (F_north[j, :] - F_south[j, :]) - S_p_line * dx * dy
 
                     # === 左边界 (i=0) ===
                     if bc.left.type == "dirichlet":
@@ -240,6 +240,12 @@ def solve_2d(
                 if max_change < sor_tol:
                     break
 
+            # SOR 收敛追踪
+            sor_iters_this = sor_iter + 1 if max_change < sor_tol else sor_maxiter
+            max_sor_iters_used = max(max_sor_iters_used, sor_iters_this)
+            if sor_iters_this == sor_maxiter and max_change >= sor_tol:
+                sor_all_converged = False
+
             # 欠松弛
             T = (1.0 - alpha_picard) * T_prev + alpha_picard * T_new
 
@@ -275,5 +281,8 @@ def solve_2d(
         "T": T, "f_l": f_l, "C_app": C_app,
         "k": k, "rho": rho, "U": U, "V": V,
         "x": x, "y": y, "dx": dx, "dy": dy,
-        "n_picard": total_picard, "converged": all_converged,
+        "n_picard": total_picard,
+        "converged": all_converged and sor_all_converged,
+        "sor_converged": sor_all_converged,
+        "max_sor_iters": max_sor_iters_used,
     }

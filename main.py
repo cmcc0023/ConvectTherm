@@ -66,11 +66,15 @@ def run_1d_dirichlet():
 
     bc = BC1D("dirichlet", T_h, "dirichlet", T_h)
 
+    total_n_picard = 0
+    all_converged = True
     t_hist, Tc_hist = [0.0], [T[ice_c]]
     for ci in range(n_calls):
-        result = solve_1d(T_init=T, ice_mask=ice_mask, L=L, Nx=Nx,
+        result = solve_1d(T_init=T, L=L, Nx=Nx,
                           dt=dt, Nt=Nt_per_call, bc=bc,
                           tol_picard=1e-3, max_picard=50)
+        total_n_picard += result['n_picard']
+        all_converged &= result['converged']
         T = result["T"]
         tc = (ci + 1) * dt * Nt_per_call
         t_hist.append(tc)
@@ -78,6 +82,8 @@ def run_1d_dirichlet():
         if (ci + 1) % max(1, n_calls // 3) == 0:
             print(f"  t={tc/60:.0f}min  Tc={T[ice_c]:.2f}K  fl={result['f_l'][ice_c]:.3f}")
 
+    result['n_picard'] = total_n_picard
+    result['converged'] = all_converged
     t_h = np.array(t_hist) / 3600
     plot_temperature_history(t_h, [Tc_hist], ["定温"], "case1_1d_dirichlet_Tc.png",
                              title="Case 1: 一维定温边界冰块中心温度")
@@ -104,11 +110,15 @@ def run_1d_neumann():
 
     bc = BC1D("neumann", q_in, "dirichlet", T_h)
 
+    total_n_picard = 0
+    all_converged = True
     t_hist, Tc_hist = [0.0], [T[ice_c]]
     for ci in range(n_calls):
-        result = solve_1d(T_init=T, ice_mask=ice_mask, L=L, Nx=Nx,
+        result = solve_1d(T_init=T, L=L, Nx=Nx,
                           dt=dt, Nt=Nt_per_call, bc=bc,
                           tol_picard=1e-3, max_picard=50)
+        total_n_picard += result['n_picard']
+        all_converged &= result['converged']
         T = result["T"]
         tc = (ci + 1) * dt * Nt_per_call
         t_hist.append(tc)
@@ -116,6 +126,8 @@ def run_1d_neumann():
         if (ci + 1) % max(1, n_calls // 3) == 0:
             print(f"  t={tc/60:.0f}min  Tc={T[ice_c]:.2f}K  fl={result['f_l'][ice_c]:.3f}")
 
+    result['n_picard'] = total_n_picard
+    result['converged'] = all_converged
     t_h = np.array(t_hist) / 3600
     plot_temperature_history(t_h, [Tc_hist], ["热流"], "case2_1d_neumann_Tc.png",
                              title="Case 2: 一维热流边界冰块中心温度")
@@ -143,11 +155,15 @@ def run_1d_robin():
 
     bc = BC1D("robin", (h_conv, T_inf), "dirichlet", T_h)
 
+    total_n_picard = 0
+    all_converged = True
     t_hist, Tc_hist = [0.0], [T[ice_c]]
     for ci in range(n_calls):
-        result = solve_1d(T_init=T, ice_mask=ice_mask, L=L, Nx=Nx,
+        result = solve_1d(T_init=T, L=L, Nx=Nx,
                           dt=dt, Nt=Nt_per_call, bc=bc,
                           tol_picard=1e-3, max_picard=50)
+        total_n_picard += result['n_picard']
+        all_converged &= result['converged']
         T = result["T"]
         tc = (ci + 1) * dt * Nt_per_call
         t_hist.append(tc)
@@ -155,6 +171,8 @@ def run_1d_robin():
         if (ci + 1) % max(1, n_calls // 3) == 0:
             print(f"  t={tc/60:.0f}min  Tc={T[ice_c]:.2f}K  fl={result['f_l'][ice_c]:.3f}")
 
+    result['n_picard'] = total_n_picard
+    result['converged'] = all_converged
     t_h = np.array(t_hist) / 3600
     plot_temperature_history(t_h, [Tc_hist], ["对流"], "case3_1d_robin_Tc.png",
                              title="Case 3: 一维对流边界冰块中心温度")
@@ -173,7 +191,7 @@ def run_2d_dirichlet():
     print("=" * 60)
 
     Lx, Ly, Nx, Ny = 0.1, 0.1, 50, 50
-    dt, Nt_per_call, n_calls = 10.0, 50, 7
+    dt, Nt_per_call, n_calls = 10.0, 50, 12
     T_h = 293.15
 
     dx, dy = Lx / Nx, Ly / Ny
@@ -191,12 +209,20 @@ def run_2d_dirichlet():
         top=SideBC("dirichlet", T_wall=T_h),
     )
 
+    total_n_picard = 0
+    all_converged = True
+    all_sor_converged = True
+    overall_max_sor_iters = 0
     t_hist, Tc_hist = [0.0], [T[ice_j, ice_i]]
     for ci in range(n_calls):
-        result = solve_2d(T_init=T, ice_mask=ice_mask, Lx=Lx, Ly=Ly,
+        result = solve_2d(T_init=T, Lx=Lx, Ly=Ly,
                           Nx=Nx, Ny=Ny, dt=dt, Nt=Nt_per_call, bc=bc,
                           tol_picard=1e-3, max_picard=50,
                           sor_omega=1.5, sor_tol=1e-5, sor_maxiter=2000)
+        total_n_picard += result['n_picard']
+        all_converged &= result['converged']
+        all_sor_converged &= result.get('sor_converged', True)
+        overall_max_sor_iters = max(overall_max_sor_iters, result.get('max_sor_iters', 0))
         T = result["T"]
         tc = (ci + 1) * dt * Nt_per_call
         t_hist.append(tc)
@@ -204,6 +230,10 @@ def run_2d_dirichlet():
         if (ci + 1) % max(1, n_calls // 3) == 0:
             print(f"  t={tc/60:.0f}min  Tc={T[ice_j,ice_i]:.2f}K  fl={result['f_l'][ice_j,ice_i]:.3f}")
 
+    result['n_picard'] = total_n_picard
+    result['converged'] = all_converged
+    result['sor_converged'] = all_sor_converged
+    result['max_sor_iters'] = overall_max_sor_iters
     t_h = np.array(t_hist) / 3600
     plot_temperature_history(t_h, [Tc_hist], ["定温"], "case4_2d_dirichlet_Tc.png",
                              title="Case 4: 二维定温边界冰块中心温度")
@@ -219,7 +249,7 @@ def run_2d_neumann():
     print("=" * 60)
 
     Lx, Ly, Nx, Ny = 0.1, 0.1, 50, 50
-    dt, Nt_per_call, n_calls = 10.0, 50, 7
+    dt, Nt_per_call, n_calls = 10.0, 50, 12
     T_h = 293.15
     q_in = 1000.0
 
@@ -238,12 +268,20 @@ def run_2d_neumann():
         top=SideBC("dirichlet", T_wall=T_h),
     )
 
+    total_n_picard = 0
+    all_converged = True
+    all_sor_converged = True
+    overall_max_sor_iters = 0
     t_hist, Tc_hist = [0.0], [T[ice_j, ice_i]]
     for ci in range(n_calls):
-        result = solve_2d(T_init=T, ice_mask=ice_mask, Lx=Lx, Ly=Ly,
+        result = solve_2d(T_init=T, Lx=Lx, Ly=Ly,
                           Nx=Nx, Ny=Ny, dt=dt, Nt=Nt_per_call, bc=bc,
                           tol_picard=1e-3, max_picard=50,
                           sor_omega=1.5, sor_tol=1e-5, sor_maxiter=2000)
+        total_n_picard += result['n_picard']
+        all_converged &= result['converged']
+        all_sor_converged &= result.get('sor_converged', True)
+        overall_max_sor_iters = max(overall_max_sor_iters, result.get('max_sor_iters', 0))
         T = result["T"]
         tc = (ci + 1) * dt * Nt_per_call
         t_hist.append(tc)
@@ -251,6 +289,10 @@ def run_2d_neumann():
         if (ci + 1) % max(1, n_calls // 3) == 0:
             print(f"  t={tc/60:.0f}min  Tc={T[ice_j,ice_i]:.2f}K  fl={result['f_l'][ice_j,ice_i]:.3f}")
 
+    result['n_picard'] = total_n_picard
+    result['converged'] = all_converged
+    result['sor_converged'] = all_sor_converged
+    result['max_sor_iters'] = overall_max_sor_iters
     t_h = np.array(t_hist) / 3600
     plot_temperature_history(t_h, [Tc_hist], ["热流"], "case5_2d_neumann_Tc.png",
                              title="Case 5: 二维热流边界冰块中心温度")
@@ -266,7 +308,7 @@ def run_2d_robin():
     print("=" * 60)
 
     Lx, Ly, Nx, Ny = 0.1, 0.1, 50, 50
-    dt, Nt_per_call, n_calls = 10.0, 50, 7
+    dt, Nt_per_call, n_calls = 10.0, 50, 12
     T_h = 293.15
     h_conv = 200.0
     T_inf = 293.15
@@ -286,12 +328,20 @@ def run_2d_robin():
         top=SideBC("dirichlet", T_wall=T_h),
     )
 
+    total_n_picard = 0
+    all_converged = True
+    all_sor_converged = True
+    overall_max_sor_iters = 0
     t_hist, Tc_hist = [0.0], [T[ice_j, ice_i]]
     for ci in range(n_calls):
-        result = solve_2d(T_init=T, ice_mask=ice_mask, Lx=Lx, Ly=Ly,
+        result = solve_2d(T_init=T, Lx=Lx, Ly=Ly,
                           Nx=Nx, Ny=Ny, dt=dt, Nt=Nt_per_call, bc=bc,
                           tol_picard=1e-3, max_picard=50,
                           sor_omega=1.5, sor_tol=1e-5, sor_maxiter=2000)
+        total_n_picard += result['n_picard']
+        all_converged &= result['converged']
+        all_sor_converged &= result.get('sor_converged', True)
+        overall_max_sor_iters = max(overall_max_sor_iters, result.get('max_sor_iters', 0))
         T = result["T"]
         tc = (ci + 1) * dt * Nt_per_call
         t_hist.append(tc)
@@ -299,6 +349,10 @@ def run_2d_robin():
         if (ci + 1) % max(1, n_calls // 3) == 0:
             print(f"  t={tc/60:.0f}min  Tc={T[ice_j,ice_i]:.2f}K  fl={result['f_l'][ice_j,ice_i]:.3f}")
 
+    result['n_picard'] = total_n_picard
+    result['converged'] = all_converged
+    result['sor_converged'] = all_sor_converged
+    result['max_sor_iters'] = overall_max_sor_iters
     t_h = np.array(t_hist) / 3600
     plot_temperature_history(t_h, [Tc_hist], ["对流"], "case6_2d_robin_Tc.png",
                              title="Case 6: 二维对流边界冰块中心温度")
@@ -420,8 +474,8 @@ def main():
         ("1D-Dirichlet", r1), ("1D-Neumann", r2), ("1D-Robin", r3),
         ("2D-Dirichlet", r4), ("2D-Neumann", r5), ("2D-Robin", r6),
     ]
-    print(f"\n{'Case':<18} {'T_min(K)':>8} {'T_max(K)':>8} {'Tc(K)':>8} {'f_l_c':>7} {'Picard':>7} {'Conv':>5}")
-    print("-" * 65)
+    print(f"\n{'Case':<18} {'T_min(K)':>8} {'T_max(K)':>8} {'Tc(K)':>8} {'f_l_c':>7} {'Picard':>7} {'Conv':>5} {'SOR':>5}")
+    print("-" * 73)
     for name, r in cases:
         T = r["T"]
         fl = r["f_l"]
@@ -432,7 +486,8 @@ def main():
         else:
             Tc = T[T.shape[0] // 2, T.shape[1] // 2]
             flc = fl[fl.shape[0] // 2, fl.shape[1] // 2]
-        print(f"{name:<18} {T.min():8.2f} {T.max():8.2f} {Tc:8.2f} {flc:7.3f} {r['n_picard']:7d} {r['converged']!s:>5}")
+        sor_info = f"{r['sor_converged']!s:>5}" if 'sor_converged' in r else "    -"
+        print(f"{name:<18} {T.min():8.2f} {T.max():8.2f} {Tc:8.2f} {flc:7.3f} {r['n_picard']:7d} {r['converged']!s:>5} {sor_info}")
 
 
 if __name__ == "__main__":

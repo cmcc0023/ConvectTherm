@@ -12,7 +12,7 @@ CP_I = 2090.0       # J/(kg·K)
 
 # 相变参数
 T_MELT = 273.15     # K
-DELTA_T_M = 0.5     # K，相变半区间
+DELTA_T_M = 0.5     # K，相变区间宽度
 L_FUSION = 334000.0 # J/kg
 
 EPS_T = 1e-3        # K，液相率计算容差

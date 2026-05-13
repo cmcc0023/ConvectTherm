@@ -31,7 +31,6 @@ class BC1D:
 
 def solve_1d(
     T_init: np.ndarray,
-    ice_mask: np.ndarray,
     L: float,
     Nx: int,
     dt: float,
@@ -48,7 +47,6 @@ def solve_1d(
     Parameters
     ----------
     T_init      : 初始温度场 (K)，长度 Nx
-    ice_mask    : 冰区域布尔数组，True 表示该单元为冰
     L           : 计算域长度 (m)
     Nx          : 网格数
     dt          : 时间步长 (s)
@@ -120,7 +118,7 @@ def solve_1d(
             b = a_P0 * T_old + S_p_const * dx   # 式(16e)
 
             # 主对角系数（不可压流简化），式(17)
-            a_P = a_P0 + a_W + a_E - S_p_line * dx
+            a_P = a_P0 + a_W + a_E + (F_east - F_west) - S_p_line * dx
 
             # --- 边界条件修正 ---
             if bc.left_type == "dirichlet":

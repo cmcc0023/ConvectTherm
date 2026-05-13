@@ -18,7 +18,7 @@
 
 含相变的对流-扩散传热统一形式：
 
-<img src="https://latex.codecogs.com/png.image?C_%5Cmathrm%7Bapp%7D%5Cfrac%7B%5Cpartial%20T%7D%7B%5Cpartial%20t%7D%20%2B%20%5Cnabla%5Ccdot%28C%5Cmathbf%7BU%7D%20T%29%20%3D%20%5Cnabla%5Ccdot%28k%5Cnabla%20T%29%20%2B%20S" alt="formula" />
+<p align="center"><img src="https://latex.codecogs.com/png.image?C_%5Cmathrm%7Bapp%7D%5Cfrac%7B%5Cpartial%20T%7D%7B%5Cpartial%20t%7D%20%2B%20%5Cnabla%5Ccdot%28C%5Cmathbf%7BU%7D%20T%29%20%3D%20%5Cnabla%5Ccdot%28k%5Cnabla%20T%29%20%2B%20S" alt="formula" /></p>
 
 其中 <img src="https://latex.codecogs.com/png.image?C%20%3D%20%5Crho%20c_p" alt="formula" /> 为体积热容，<img src="https://latex.codecogs.com/png.image?C_%5Cmathrm%7Bapp%7D" alt="formula" /> 为表观热容（含相变潜热），<img src="https://latex.codecogs.com/png.image?%5Cmathbf%7BU%7D%20%3D%20f_l%20%5Cmathbf%7BU%7D_w" alt="formula" /> 为液相速度场。
 
@@ -26,15 +26,15 @@
 
 在熔点 <img src="https://latex.codecogs.com/png.image?T_m" alt="formula" /> 两侧引入相变区间 <img src="https://latex.codecogs.com/png.image?%5BT_s%2C%20T_l%5D" alt="formula" />，避免显式追踪冰-水界面：
 
-<img src="https://latex.codecogs.com/png.image?T_s%20%3D%20T_m%20-%20%5Cfrac%7B%5CDelta%20T_m%7D%7B2%7D%2C%20%5Cquad%20T_l%20%3D%20T_m%20%2B%20%5Cfrac%7B%5CDelta%20T_m%7D%7B2%7D" alt="formula" />
+<p align="center"><img src="https://latex.codecogs.com/png.image?T_s%20%3D%20T_m%20-%20%5Cfrac%7B%5CDelta%20T_m%7D%7B2%7D%2C%20%5Cquad%20T_l%20%3D%20T_m%20%2B%20%5Cfrac%7B%5CDelta%20T_m%7D%7B2%7D" alt="formula" /></p>
 
 **液相率** 在区间内线性插值：
 
-<img src="https://latex.codecogs.com/png.image?f_l%20%3D%20%5Cbegin%7Bcases%7D%200%2C%20%26%20T%20%5Cle%20T_s%20%5C%5C%20%5Cfrac%7BT%20-%20T_s%7D%7BT_l%20-%20T_s%7D%2C%20%26%20T_s%20%3C%20T%20%3C%20T_l%20%5C%5C%201%2C%20%26%20T%20%5Cge%20T_l%20%5Cend%7Bcases%7D" alt="formula" />
+<p align="center"><img src="https://latex.codecogs.com/png.image?f_l%20%3D%20%5Cbegin%7Bcases%7D%200%2C%20%26%20T%20%5Cle%20T_s%20%5C%5C%20%5Cfrac%7BT%20-%20T_s%7D%7BT_l%20-%20T_s%7D%2C%20%26%20T_s%20%3C%20T%20%3C%20T_l%20%5C%5C%201%2C%20%26%20T%20%5Cge%20T_l%20%5Cend%7Bcases%7D" alt="formula" /></p>
 
 **表观比热容** 在相变区间内叠加潜热项：
 
-<img src="https://latex.codecogs.com/png.image?c_%7Bp%2C%5Cmathrm%7Bapp%7D%7D%20%3D%20c_p%20%2B%20%5Cfrac%7BL%7D%7BT_l%20-%20T_s%7D" alt="formula" />
+<p align="center"><img src="https://latex.codecogs.com/png.image?c_%7Bp%2C%5Cmathrm%7Bapp%7D%7D%20%3D%20c_p%20%2B%20%5Cfrac%7BL%7D%7BT_l%20-%20T_s%7D" alt="formula" /></p>
 
 **物性插值**：<img src="https://latex.codecogs.com/png.image?k%20%3D%20f_l%20k_w%20%2B%20%281-f_l%29%20k_i" alt="formula" />，<img src="https://latex.codecogs.com/png.image?%5Crho%20%3D%20f_l%20%5Crho_w%20%2B%20%281-f_l%29%20%5Crho_i" alt="formula" />
 
@@ -42,11 +42,11 @@
 
 对控制方程在控制体 <img src="https://latex.codecogs.com/png.image?V_P" alt="formula" /> 上积分，时间项全隐式，对流项一阶迎风，扩散项中心差分：
 
-<img src="https://latex.codecogs.com/png.image?C_%7B%5Cmathrm%7Bapp%7D%2CP%7D%20V_P%20%5Cfrac%7BT_P%5E%7Bn%2B1%7D-T_P%5En%7D%7B%5CDelta%20t%7D%20%2B%20%28F_e%20T_e%20-%20F_w%20T_w%29%20%3D%20D_e%28T_E%20-%20T_P%29%20-%20D_w%28T_P%20-%20T_W%29%20%2B%20S_P%20V_P" alt="formula" />
+<p align="center"><img src="https://latex.codecogs.com/png.image?C_%7B%5Cmathrm%7Bapp%7D%2CP%7D%20V_P%20%5Cfrac%7BT_P%5E%7Bn%2B1%7D-T_P%5En%7D%7B%5CDelta%20t%7D%20%2B%20%28F_e%20T_e%20-%20F_w%20T_w%29%20%3D%20D_e%28T_E%20-%20T_P%29%20-%20D_w%28T_P%20-%20T_W%29%20%2B%20S_P%20V_P" alt="formula" /></p>
 
 整理为标准代数方程：
 
-<img src="https://latex.codecogs.com/png.image?a_P%20T_P%5E%7Bn%2B1%7D%20%3D%20a_W%20T_W%5E%7Bn%2B1%7D%20%2B%20a_E%20T_E%5E%7Bn%2B1%7D%20%2B%20b_P" alt="formula" />
+<p align="center"><img src="https://latex.codecogs.com/png.image?a_P%20T_P%5E%7Bn%2B1%7D%20%3D%20a_W%20T_W%5E%7Bn%2B1%7D%20%2B%20a_E%20T_E%5E%7Bn%2B1%7D%20%2B%20b_P" alt="formula" /></p>
 
 其中 <img src="https://latex.codecogs.com/png.image?a_W%20%3D%20D_w%20%2B%20%5Cmax%28F_w%2C%200%29" alt="formula" />，<img src="https://latex.codecogs.com/png.image?a_E%20%3D%20D_e%20%2B%20%5Cmax%28-F_e%2C%200%29" alt="formula" />，<img src="https://latex.codecogs.com/png.image?a_P%20%3D%20a_P%5E0%20%2B%20a_W%20%2B%20a_E" alt="formula" />，<img src="https://latex.codecogs.com/png.image?a_P%5E0%20%3D%20C_%7B%5Cmathrm%7Bapp%7D%2CP%7D%20V_P%20%2F%20%5CDelta%20t" alt="formula" />。
 

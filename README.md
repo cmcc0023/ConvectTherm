@@ -4,13 +4,13 @@
 
 本项目针对 **含相变的非稳态对流-扩散传热问题**，采用有限体积法（FVM）编制数值求解程序。
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/题目方程与条件.png" alt="题目方程与条件" style="zoom:33%;" />
+<img src="images/题目方程与条件.png" alt="题目方程与条件" style="zoom:33%;" />
 
 **物理场景**：矩形域内装水，水中含矩形冰块，通过不同边界条件加热，求解瞬态温度场分布，分析冰块融化过程。
 
 
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/算例.png" alt="算例" style="zoom:33%;" />
+<img src="images/算例.png" alt="算例" style="zoom:33%;" />
 
 ## 公式推导
 
@@ -18,59 +18,59 @@
 
 含相变的对流-扩散传热统一形式：
 
-$$C_\mathrm{app}\frac{\partial T}{\partial t} + \nabla\cdot(C\mathbf{U} T) = \nabla\cdot(k\nabla T) + S$$
+<img src="https://latex.codecogs.com/png.image?C_%5Cmathrm%7Bapp%7D%5Cfrac%7B%5Cpartial%20T%7D%7B%5Cpartial%20t%7D%20%2B%20%5Cnabla%5Ccdot%28C%5Cmathbf%7BU%7D%20T%29%20%3D%20%5Cnabla%5Ccdot%28k%5Cnabla%20T%29%20%2B%20S" alt="formula" />
 
-其中 $C = \rho c_p$ 为体积热容，$C_\mathrm{app}$ 为表观热容（含相变潜热），$\mathbf{U} = f_l \mathbf{U}_w$ 为液相速度场。
+其中 <img src="https://latex.codecogs.com/png.image?C%20%3D%20%5Crho%20c_p" alt="formula" /> 为体积热容，<img src="https://latex.codecogs.com/png.image?C_%5Cmathrm%7Bapp%7D" alt="formula" /> 为表观热容（含相变潜热），<img src="https://latex.codecogs.com/png.image?%5Cmathbf%7BU%7D%20%3D%20f_l%20%5Cmathbf%7BU%7D_w" alt="formula" /> 为液相速度场。
 
 ### 2. 表观热容法处理相变
 
-在熔点 $T_m$ 两侧引入相变区间 $[T_s, T_l]$，避免显式追踪冰-水界面：
+在熔点 <img src="https://latex.codecogs.com/png.image?T_m" alt="formula" /> 两侧引入相变区间 <img src="https://latex.codecogs.com/png.image?%5BT_s%2C%20T_l%5D" alt="formula" />，避免显式追踪冰-水界面：
 
-$$T_s = T_m - \frac{\Delta T_m}{2}, \quad T_l = T_m + \frac{\Delta T_m}{2}$$
+<img src="https://latex.codecogs.com/png.image?T_s%20%3D%20T_m%20-%20%5Cfrac%7B%5CDelta%20T_m%7D%7B2%7D%2C%20%5Cquad%20T_l%20%3D%20T_m%20%2B%20%5Cfrac%7B%5CDelta%20T_m%7D%7B2%7D" alt="formula" />
 
 **液相率** 在区间内线性插值：
 
-$$f_l = \begin{cases} 0, & T \le T_s \\ \frac{T - T_s}{T_l - T_s}, & T_s < T < T_l \\ 1, & T \ge T_l \end{cases}$$
+<img src="https://latex.codecogs.com/png.image?f_l%20%3D%20%5Cbegin%7Bcases%7D%200%2C%20%26%20T%20%5Cle%20T_s%20%5C%5C%20%5Cfrac%7BT%20-%20T_s%7D%7BT_l%20-%20T_s%7D%2C%20%26%20T_s%20%3C%20T%20%3C%20T_l%20%5C%5C%201%2C%20%26%20T%20%5Cge%20T_l%20%5Cend%7Bcases%7D" alt="formula" />
 
 **表观比热容** 在相变区间内叠加潜热项：
 
-$$c_{p,\mathrm{app}} = c_p + \frac{L}{T_l - T_s}$$
+<img src="https://latex.codecogs.com/png.image?c_%7Bp%2C%5Cmathrm%7Bapp%7D%7D%20%3D%20c_p%20%2B%20%5Cfrac%7BL%7D%7BT_l%20-%20T_s%7D" alt="formula" />
 
-**物性插值**：$k = f_l k_w + (1-f_l) k_i$，$\rho = f_l \rho_w + (1-f_l) \rho_i$
+**物性插值**：<img src="https://latex.codecogs.com/png.image?k%20%3D%20f_l%20k_w%20%2B%20%281-f_l%29%20k_i" alt="formula" />，<img src="https://latex.codecogs.com/png.image?%5Crho%20%3D%20f_l%20%5Crho_w%20%2B%20%281-f_l%29%20%5Crho_i" alt="formula" />
 
 ### 3. 有限体积法离散
 
-对控制方程在控制体 $V_P$ 上积分，时间项全隐式，对流项一阶迎风，扩散项中心差分：
+对控制方程在控制体 <img src="https://latex.codecogs.com/png.image?V_P" alt="formula" /> 上积分，时间项全隐式，对流项一阶迎风，扩散项中心差分：
 
-$$C_{\mathrm{app},P} V_P \frac{T_P^{n+1}-T_P^n}{\Delta t} + (F_e T_e - F_w T_w) = D_e(T_E - T_P) - D_w(T_P - T_W) + S_P V_P$$
+<img src="https://latex.codecogs.com/png.image?C_%7B%5Cmathrm%7Bapp%7D%2CP%7D%20V_P%20%5Cfrac%7BT_P%5E%7Bn%2B1%7D-T_P%5En%7D%7B%5CDelta%20t%7D%20%2B%20%28F_e%20T_e%20-%20F_w%20T_w%29%20%3D%20D_e%28T_E%20-%20T_P%29%20-%20D_w%28T_P%20-%20T_W%29%20%2B%20S_P%20V_P" alt="formula" />
 
 整理为标准代数方程：
 
-$$a_P T_P^{n+1} = a_W T_W^{n+1} + a_E T_E^{n+1} + b_P$$
+<img src="https://latex.codecogs.com/png.image?a_P%20T_P%5E%7Bn%2B1%7D%20%3D%20a_W%20T_W%5E%7Bn%2B1%7D%20%2B%20a_E%20T_E%5E%7Bn%2B1%7D%20%2B%20b_P" alt="formula" />
 
-其中 $a_W = D_w + \max(F_w, 0)$，$a_E = D_e + \max(-F_e, 0)$，$a_P = a_P^0 + a_W + a_E$，$a_P^0 = C_{\mathrm{app},P} V_P / \Delta t$。
+其中 <img src="https://latex.codecogs.com/png.image?a_W%20%3D%20D_w%20%2B%20%5Cmax%28F_w%2C%200%29" alt="formula" />，<img src="https://latex.codecogs.com/png.image?a_E%20%3D%20D_e%20%2B%20%5Cmax%28-F_e%2C%200%29" alt="formula" />，<img src="https://latex.codecogs.com/png.image?a_P%20%3D%20a_P%5E0%20%2B%20a_W%20%2B%20a_E" alt="formula" />，<img src="https://latex.codecogs.com/png.image?a_P%5E0%20%3D%20C_%7B%5Cmathrm%7Bapp%7D%2CP%7D%20V_P%20%2F%20%5CDelta%20t" alt="formula" />。
 
-界面导热系数采用调和平均：$D_e = \frac{2 k_P k_E}{k_P + k_E} \frac{A_e}{\delta_e}$
+界面导热系数采用调和平均：<img src="https://latex.codecogs.com/png.image?D_e%20%3D%20%5Cfrac%7B2%20k_P%20k_E%7D%7Bk_P%20%2B%20k_E%7D%20%5Cfrac%7BA_e%7D%7B%5Cdelta_e%7D" alt="formula" />
 
 ### 4. 边界条件
 
 | 类型 | a_P 修正 | b 修正 |
 |------|----------|--------|
-| 定温 (Dirichlet) | $a_P \mathrel{+}= D_b$ | $b \mathrel{+}= D_b T_\mathrm{wall}$ |
-| 热流 (Neumann) | 不变 | $b \mathrel{+}= q_\mathrm{in} A_b$ |
-| 对流 (Robin) | $a_P \mathrel{+}= h_\mathrm{eff} A_b$ | $b \mathrel{+}= h_\mathrm{eff} A_b T_\infty$ |
+| 定温 (Dirichlet) | <img src="https://latex.codecogs.com/png.image?a_P%20%5Cmathrel%7B%2B%7D%3D%20D_b" alt="formula" /> | <img src="https://latex.codecogs.com/png.image?b%20%5Cmathrel%7B%2B%7D%3D%20D_b%20T_%5Cmathrm%7Bwall%7D" alt="formula" /> |
+| 热流 (Neumann) | 不变 | <img src="https://latex.codecogs.com/png.image?b%20%5Cmathrel%7B%2B%7D%3D%20q_%5Cmathrm%7Bin%7D%20A_b" alt="formula" /> |
+| 对流 (Robin) | <img src="https://latex.codecogs.com/png.image?a_P%20%5Cmathrel%7B%2B%7D%3D%20h_%5Cmathrm%7Beff%7D%20A_b" alt="formula" /> | <img src="https://latex.codecogs.com/png.image?b%20%5Cmathrel%7B%2B%7D%3D%20h_%5Cmathrm%7Beff%7D%20A_b%20T_%5Cinfty" alt="formula" /> |
 
-其中 $h_\mathrm{eff} = 1/(d_b/k_b + 1/h)$。定温边界是 $h \to \infty$ 的极限。
+其中 <img src="https://latex.codecogs.com/png.image?h_%5Cmathrm%7Beff%7D%20%3D%201%2F%28d_b%2Fk_b%20%2B%201%2Fh%29" alt="formula" />。定温边界是 <img src="https://latex.codecogs.com/png.image?h%20%5Cto%20%5Cinfty" alt="formula" /> 的极限。
 
 ### 5. 非线性求解
 
-由于 $C_\mathrm{app}$、$k$、$rho$ 均随温度变化，每一时间步需 Picard 迭代 + 欠松弛：
+由于 <img src="https://latex.codecogs.com/png.image?C_%5Cmathrm%7Bapp%7D" alt="formula" />、<img src="https://latex.codecogs.com/png.image?k" alt="formula" />、<img src="https://latex.codecogs.com/png.image?rho" alt="formula" /> 均随温度变化，每一时间步需 Picard 迭代 + 欠松弛：
 
-1. 取 $T^{n+1,0} = T^n$
+1. 取 <img src="https://latex.codecogs.com/png.image?T%5E%7Bn%2B1%2C0%7D%20%3D%20T%5En" alt="formula" />
 2. 根据当前温度更新液相率及物性
 3. 组装系数矩阵，TDMA（1D）/ 逐线 TDMA+SOR（2D）求解
-4. 温度和物性欠松弛：$T = (1-\alpha)T_\mathrm{prev} + \alpha T_\mathrm{solved}$
-5. 检验收敛：$\max|T^{m+1} - T^m| < \varepsilon_T$
+4. 温度和物性欠松弛：<img src="https://latex.codecogs.com/png.image?T%20%3D%20%281-%5Calpha%29T_%5Cmathrm%7Bprev%7D%20%2B%20%5Calpha%20T_%5Cmathrm%7Bsolved%7D" alt="formula" />
+5. 检验收敛：<img src="https://latex.codecogs.com/png.image?%5Cmax%7CT%5E%7Bm%2B1%7D%20-%20T%5Em%7C%20%3C%20%5Cvarepsilon_T" alt="formula" />
 
 ---
 
@@ -114,7 +114,7 @@ ConvectTherm/
 - 冰块：位于域中央 3–7 cm，初始 4 cm × 4 cm
 - 初始温度：冰块 268.15 K (−5°C)，外围水 275.15 K (2°C)
 - 物理时间：1 小时
-- 纯导热（无对流），$u = v = 0$
+- 纯导热（无对流），<img src="https://latex.codecogs.com/png.image?u%20%3D%20v%20%3D%200" alt="formula" />
 
 ### 算例矩阵
 
@@ -135,57 +135,57 @@ ConvectTherm/
 
 Case 1冰块中心温度随时间变化：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case1_1d_dirichlet_Tc.png" alt="case1_1d_dirichlet_Tc" style="zoom:33%;" />
+<img src="output/case1_1d_dirichlet_Tc.png" alt="case1_1d_dirichlet_Tc" style="zoom:33%;" />
 
 Case 1 最终温度分布：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case1_1d_profile.png" alt="case1_1d_profile" style="zoom: 33%;" />
+<img src="output/case1_1d_profile.png" alt="case1_1d_profile" style="zoom: 33%;" />
 
 Case 2 冰块中心温度随时间变化：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case2_1d_neumann_Tc.png" alt="case2_1d_neumann_Tc" style="zoom:33%;" />
+<img src="output/case2_1d_neumann_Tc.png" alt="case2_1d_neumann_Tc" style="zoom:33%;" />
 
 Case 2 最终温度分布：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case2_1d_profile.png" alt="case2_1d_profile" style="zoom:33%;" />
+<img src="output/case2_1d_profile.png" alt="case2_1d_profile" style="zoom:33%;" />
 
 Case 3 冰块中心温度随时间变化：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case3_1d_robin_Tc.png" alt="case3_1d_robin_Tc" style="zoom:33%;" />
+<img src="output/case3_1d_robin_Tc.png" alt="case3_1d_robin_Tc" style="zoom:33%;" />
 
 Case 3 最终温度分布：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case3_1d_profile.png" alt="case3_1d_profile" style="zoom:33%;" />
+<img src="output/case3_1d_profile.png" alt="case3_1d_profile" style="zoom:33%;" />
 
 ### 二维算例
 
 Case 4 温度场云图：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case4_2d_T.png" alt="case4_2d_T" style="zoom:33%;" />
+<img src="output/case4_2d_T.png" alt="case4_2d_T" style="zoom:33%;" />
 
 
 
 Case 4 液相率分布：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case4_2d_fl.png" alt="case4_2d_fl" style="zoom:33%;" />
+<img src="output/case4_2d_fl.png" alt="case4_2d_fl" style="zoom:33%;" />
 
 Case 5 温度场云图：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case5_2d_T.png" alt="case5_2d_T" style="zoom:33%;" />
+<img src="output/case5_2d_T.png" alt="case5_2d_T" style="zoom:33%;" />
 
 Case 5 液相率分布：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case5_2d_fl.png" alt="case5_2d_fl" style="zoom:33%;" />
+<img src="output/case5_2d_fl.png" alt="case5_2d_fl" style="zoom:33%;" />
 
 Case 6 温度场云图：
 
 
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case6_2d_T.png" alt="case6_2d_T" style="zoom:33%;" />
+<img src="output/case6_2d_T.png" alt="case6_2d_T" style="zoom:33%;" />
 
 Case 6 液相率分布：
 
-<img src="/Users/shens/Library/CloudStorage/SynologyDrive-drive/研一/25.9.18沈化课程作业/下学期/ConvectTherm/output/case6_2d_fl.png" alt="case6_2d_fl" style="zoom:33%;" />
+<img src="output/case6_2d_fl.png" alt="case6_2d_fl" style="zoom:33%;" />
 
 ---
 
@@ -208,12 +208,12 @@ python main.py
 
 | 参数 | 符号 | 数值 | 单位 |
 |------|------|------|------|
-| 水密度 | $\rho_w$ | 999.8 | kg/m³ |
-| 水导热系数 | $k_w$ | 0.569 | W/(m·K) |
-| 水比热容 | $c_{p,w}$ | 4217 | J/(kg·K) |
-| 冰密度 | $\rho_i$ | 917.0 | kg/m³ |
-| 冰导热系数 | $k_i$ | 2.25 | W/(m·K) |
-| 冰比热容 | $c_{p,i}$ | 2090 | J/(kg·K) |
-| 熔点 | $T_m$ | 273.15 | K |
-| 相变区间半宽 | $\Delta T_m/2$ | 0.25 | K |
-| 相变潜热 | $L$ | 334000 | J/kg |
+| 水密度 | <img src="https://latex.codecogs.com/png.image?%5Crho_w" alt="formula" /> | 999.8 | kg/m³ |
+| 水导热系数 | <img src="https://latex.codecogs.com/png.image?k_w" alt="formula" /> | 0.569 | W/(m·K) |
+| 水比热容 | <img src="https://latex.codecogs.com/png.image?c_%7Bp%2Cw%7D" alt="formula" /> | 4217 | J/(kg·K) |
+| 冰密度 | <img src="https://latex.codecogs.com/png.image?%5Crho_i" alt="formula" /> | 917.0 | kg/m³ |
+| 冰导热系数 | <img src="https://latex.codecogs.com/png.image?k_i" alt="formula" /> | 2.25 | W/(m·K) |
+| 冰比热容 | <img src="https://latex.codecogs.com/png.image?c_%7Bp%2Ci%7D" alt="formula" /> | 2090 | J/(kg·K) |
+| 熔点 | <img src="https://latex.codecogs.com/png.image?T_m" alt="formula" /> | 273.15 | K |
+| 相变区间半宽 | <img src="https://latex.codecogs.com/png.image?%5CDelta%20T_m%2F2" alt="formula" /> | 0.25 | K |
+| 相变潜热 | <img src="https://latex.codecogs.com/png.image?L" alt="formula" /> | 334000 | J/kg |
